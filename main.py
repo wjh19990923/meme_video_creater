@@ -7,14 +7,14 @@ image_files = sorted([os.path.join(image_folder, img) for img in os.listdir(imag
                       img.endswith(".jpg") or img.endswith(".png")])
 
 # 加载背景音乐
-audio = AudioFileClip("seve_phi.m4a")
+audio = AudioFileClip(rf'background music\music2.m4a')
 music_duration = audio.duration
 
 # 计算每张图片的显示时长，使其均匀分配到整个音乐时间
-image_duration = music_duration / len(image_files)
+image_duration = (music_duration - 3) / len(image_files)  # 减去最后3秒的背景时长
 
 # 加载背景图，并获取其宽高比
-background = ImageClip("background.jpg")
+background = ImageClip("background2.jpg")
 background_width, background_height = background.size
 
 
@@ -37,8 +37,11 @@ image_clips = [
     for m in image_files
 ]
 
+# 创建一个3秒的背景剪辑
+end_background = background.set_duration(3)
+
 # 合成为视频，添加背景音乐并应用淡出效果（最后3秒音量降到0）
-video = concatenate_videoclips(image_clips, method="compose").set_audio(audio.audio_fadeout(3))
+video = concatenate_videoclips(image_clips + [end_background], method="compose").set_audio(audio.audio_fadeout(3))
 
 # 设置背景图时长，并合成最终视频
 background = background.set_duration(video.duration)
